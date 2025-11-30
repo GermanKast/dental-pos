@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,6 +35,9 @@ Route::middleware('auth')->group(function () {
     // Ruta personalizada para guardar la fórmula médica
     Route::post('/clients/{client}/prescriptions', [ClientController::class, 'storePrescription'])
         ->name('clients.prescriptions.store');
+
+    Route::get('/pos', [OrderController::class, 'index'])->name('pos.index');
+    Route::post('/pos', [OrderController::class, 'store'])->name('pos.store');
 
 });
 
