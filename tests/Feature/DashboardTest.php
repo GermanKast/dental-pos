@@ -60,8 +60,9 @@ test('dashboard displays correct metrics stats', function () {
     $response->assertInertia(fn (Assert $page) => $page
         ->component('Dashboard')
         // Verificamos que la prop 'metrics' tenga los valores exactos
-        ->where('metrics.total_sales', 150) // 100 + 50
-        ->where('metrics.today_sales', 100) // Solo la de hoy
+        // CORREGIDO: Usamos strings con decimales
+        ->where('metrics.total_sales', '150.00') 
+        ->where('metrics.today_sales', '100.00')
         ->where('metrics.total_clients', 4) // El inicial + 3 creados
         ->where('metrics.low_stock', 2)     // Solo los 2 con stock < 5
     );
