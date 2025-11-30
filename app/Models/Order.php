@@ -11,7 +11,13 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['client_id', 'user_id', 'total', 'status'];
+    protected $fillable = [
+        'client_id', 
+        'user_id', 
+        'total', 
+        'status',
+        'created_at'
+    ];
 
     // Una venta tiene muchos items (detalle)
     public function items(): HasMany
