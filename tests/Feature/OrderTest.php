@@ -44,7 +44,7 @@ test('Transaccion de venta es procesada correctamente y redirije al Ticket', fun
     
     // --- CAMBIO AQUÍ: Verificamos que redirija a la nueva ruta de orders.show ---
     $order = Order::latest()->first();
-    $response->assertRedirect(route('orders.show', $order));
+    $response->assertRedirect(route('pos.show', $order));
 
     // Verificar base de datos
     $this->assertDatabaseHas('orders', [
@@ -90,11 +90,11 @@ test('Pagina de ticket de venta es visible', function () {
     ]);
 
     // Visitar la página del ticket
-    $response = $this->actingAs($user)->get(route('orders.show', $order));
+    $response = $this->actingAs($user)->get(route('pos.show', $order));
 
     $response->assertStatus(200)
         ->assertInertia(fn (Assert $page) => $page
-            ->component('Orders/Show')
+            ->component('POS/Show')
             ->where('order.id', $order->id)
             ->has('order.items', 3) // Verificar que cargó los 3 items
             ->has('order.client')   // Verificar que cargó el cliente
