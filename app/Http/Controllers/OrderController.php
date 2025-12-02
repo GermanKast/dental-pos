@@ -30,7 +30,9 @@ class OrderController extends Controller
         ]);
 
         try {
-            DB::transaction(function () use ($request) {
+
+            $order = DB::transaction(function () use ($request) {
+
                 // Calcular total real en el backend (por seguridad)
                 $total = 0;
                 $cartItems = $request->input('cart');
@@ -69,12 +71,24 @@ class OrderController extends Controller
 
                 // 3. Actualizar total final
                 $order->update(['total' => $total]);
+
+                return $order;
             });
 
-            return redirect()->route('dashboard')->with('success', '¡Venta registrada con éxito!');
+            //return redirect()->route('dashboard')->with('success', '¡Venta registrada con éxito!');
+            return redirect()->route('pos.show', $order->id);
 
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Error en la venta: ' . $e->getMessage()]);
         }
+    }
+
+    public function show(Order $order)
+    {
+        $order->load(['client', 'user', 'items.product']);
+
+        return Inertia::render('POS/Show', [
+            'order' => $order
+        ]);
     }
 }

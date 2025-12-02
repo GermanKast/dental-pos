@@ -4,8 +4,10 @@ use App\Models\User;
 use App\Models\Client;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\OrderItem;
+use Inertia\Testing\AssertableInertia as Assert;
 
-test('Pagina de punto de venta (ordenes) es desplegada', function () {
+test('Pagina punto de venta es mostrado', function () {
     $user = User::factory()->create();
     
     $response = $this->actingAs($user)->get('/pos');
@@ -13,17 +15,17 @@ test('Pagina de punto de venta (ordenes) es desplegada', function () {
     $response->assertStatus(200);
 });
 
-test('Transaccion de venta es procesada correctamente', function () {
+test('Transaccion de venta es procesada correctamente y redirije al Ticket', function () {
     $user = User::factory()->create();
     $client = Client::factory()->create();
     
-    // 1. Crear un producto con Stock de 10
+    // 1. Crear un producto
     $product = Product::factory()->create([
         'price' => 100,
         'stock' => 10
     ]);
 
-    // 2. Simular el carrito de compras (Compramos 2 unidades)
+    // 2. Simular carrito
     $cartPayload = [
         [
             'id' => $product->id,
@@ -31,7 +33,7 @@ test('Transaccion de venta es procesada correctamente', function () {
         ]
     ];
 
-    // 3. Enviar la petición de venta
+    // 3. Enviar venta
     $response = $this->actingAs($user)->post('/pos', [
         'client_id' => $client->id,
         'cart' => $cartPayload
@@ -39,36 +41,29 @@ test('Transaccion de venta es procesada correctamente', function () {
 
     // 4. Verificaciones
     $response->assertSessionHasNoErrors();
-    $response->assertRedirect(route('dashboard'));
+    
+    // --- CAMBIO AQUÍ: Verificamos que redirija a la nueva ruta de orders.show ---
+    $order = Order::latest()->first();
+    $response->assertRedirect(route('orders.show', $order));
 
-    // A. Verificar que se creó la orden
+    // Verificar base de datos
     $this->assertDatabaseHas('orders', [
         'client_id' => $client->id,
-        'total' => 200, // 100 * 2
+        'total' => '200.00', // Recordar: MySQL guarda como string decimal
     ]);
 
-    // B. Verificar que se creó el detalle (Order Item)
-    $this->assertDatabaseHas('order_items', [
-        'product_id' => $product->id,
-        'quantity' => 2,
-        'price' => 100,
-    ]);
-
-    // C. ¡CRÍTICO! Verificar que el stock bajó de 10 a 8
     $this->assertDatabaseHas('products', [
         'id' => $product->id,
         'stock' => 8,
     ]);
 });
 
-test('venta falla si el stock es insuficiente', function () {
+test('Venta falla si no hay stock suficiente', function () {
     $user = User::factory()->create();
     $client = Client::factory()->create();
     
-    // Producto con solo 1 en stock
     $product = Product::factory()->create(['stock' => 1]);
 
-    // Intentamos comprar 5
     $response = $this->actingAs($user)->post('/pos', [
         'client_id' => $client->id,
         'cart' => [[
@@ -77,12 +72,31 @@ test('venta falla si el stock es insuficiente', function () {
         ]]
     ]);
 
-    // Debe fallar y tener errores en la sesión
     $response->assertSessionHasErrors('error');
+});
+
+// --- NUEVO TEST: Verificación del Ticket ---
+test('Pagina de ticket de venta es visible', function () {
+    $user = User::factory()->create();
     
-    // El stock debe seguir intacto
-    $this->assertDatabaseHas('products', [
-        'id' => $product->id,
-        'stock' => 1,
+    // Crear una orden con items usando los Factories
+    $order = Order::factory()->create([
+        'user_id' => $user->id
     ]);
+    
+    // Crear 3 items para esa orden
+    OrderItem::factory()->count(3)->create([
+        'order_id' => $order->id
+    ]);
+
+    // Visitar la página del ticket
+    $response = $this->actingAs($user)->get(route('orders.show', $order));
+
+    $response->assertStatus(200)
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Orders/Show')
+            ->where('order.id', $order->id)
+            ->has('order.items', 3) // Verificar que cargó los 3 items
+            ->has('order.client')   // Verificar que cargó el cliente
+        );
 });

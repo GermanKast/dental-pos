@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
     // ruta para el modulo ordenes de venta
     Route::get('/pos', [OrderController::class, 'index'])->name('pos.index');
     Route::post('/pos', [OrderController::class, 'store'])->name('pos.store');
+    Route::get('/pos/{order}', [OrderController::class, 'show'])->name('pos.show');
 
 });
 
