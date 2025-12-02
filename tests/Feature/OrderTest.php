@@ -5,7 +5,7 @@ use App\Models\Client;
 use App\Models\Product;
 use App\Models\Order;
 
-test('pos page is displayed', function () {
+test('Pagina de punto de venta (ordenes) es desplegada', function () {
     $user = User::factory()->create();
     
     $response = $this->actingAs($user)->get('/pos');
@@ -13,7 +13,7 @@ test('pos page is displayed', function () {
     $response->assertStatus(200);
 });
 
-test('sale transaction is processed correctly', function () {
+test('Transaccion de venta es procesada correctamente', function () {
     $user = User::factory()->create();
     $client = Client::factory()->create();
     
@@ -61,7 +61,7 @@ test('sale transaction is processed correctly', function () {
     ]);
 });
 
-test('sale fails if stock is insufficient', function () {
+test('venta falla si el stock es insuficiente', function () {
     $user = User::factory()->create();
     $client = Client::factory()->create();
     

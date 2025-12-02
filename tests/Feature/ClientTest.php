@@ -3,7 +3,7 @@
 use App\Models\User;
 use App\Models\Client;
 
-test('client list page is displayed', function () {
+test('Pagina Clientes Desplegada', function () {
     $user = User::factory()->create();
     
     $response = $this->actingAs($user)->get('/clients');
@@ -11,7 +11,7 @@ test('client list page is displayed', function () {
     $response->assertStatus(200);
 });
 
-test('new client can be created', function () {
+test('Es posible crear un nuevo cliente', function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->post('/clients', [
@@ -29,7 +29,7 @@ test('new client can be created', function () {
     ]);
 });
 
-test('prescription can be added to client', function () {
+test('Es posible añadir prescripcion a un cliente', function () {
     $user = User::factory()->create();
     $client = Client::factory()->create(); // Usamos factory
 

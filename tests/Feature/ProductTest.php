@@ -3,7 +3,7 @@
 use App\Models\User;
 use App\Models\Product;
 
-test('inventory page is displayed', function () {
+test('Pagina de inventario es desplegada', function () {
     // 1. Creamos un usuario falso
     $user = User::factory()->create();
 
@@ -14,7 +14,7 @@ test('inventory page is displayed', function () {
     $response->assertStatus(200);
 });
 
-test('products can be created', function () {
+test('Se pueden crear productos', function () {
     $user = User::factory()->create();
 
     // Enviamos datos para crear un producto

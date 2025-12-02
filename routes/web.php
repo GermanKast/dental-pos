@@ -27,16 +27,18 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // ruta modulo productos
     Route::resource('products', ProductController::class)
     ->only(['index', 'store', 'update', 'destroy']);
 
-    // Ruta base de recursos (index, store, show)
+    // Ruta para el modulo clientes
     Route::resource('clients', ClientController::class)->only(['index', 'store', 'show']);
 
-    // Ruta personalizada para guardar la fórmula médica
+    // Ruta para guardar la fórmula médica
     Route::post('/clients/{client}/prescriptions', [ClientController::class, 'storePrescription'])
         ->name('clients.prescriptions.store');
 
+    // ruta para el modulo ordenes de venta
     Route::get('/pos', [OrderController::class, 'index'])->name('pos.index');
     Route::post('/pos', [OrderController::class, 'store'])->name('pos.store');
 

@@ -7,7 +7,7 @@ use App\Models\Order;
 use Inertia\Testing\AssertableInertia as Assert;
 
 // 1. Verificar que la página carga
-test('dashboard page is displayed for authenticated users', function () {
+test('Pagina Dashboard es desplegada para usuarios autenticados', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
@@ -20,7 +20,7 @@ test('dashboard page is displayed for authenticated users', function () {
 });
 
 // 2. Verificar el cálculo de Métricas (KPIs)
-test('dashboard displays correct metrics stats', function () {
+test('Dashboard muestra metricas correctas', function () {
     $user = User::factory()->create();
     $client = Client::factory()->create();
 
@@ -69,7 +69,7 @@ test('dashboard displays correct metrics stats', function () {
 });
 
 // 3. Verificar la tabla de Ventas Recientes
-test('dashboard lists recent orders correctly', function () {
+test('Dashboard enlista ordenes recientes correctamente', function () {
     $user = User::factory()->create();
     $client = Client::factory()->create();
 

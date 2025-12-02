@@ -1,12 +1,12 @@
 <?php
 
-test('registration screen can be rendered', function () {
+test('La pantalla de registro se puede renderizar', function () {
     $response = $this->get('/register');
 
     $response->assertStatus(200);
 });
 
-test('new users can register', function () {
+test('Los nuevos usuarios pueden registrarse', function () {
     $response = $this->post('/register', [
         'name' => 'Test User',
         'email' => 'test@example.com',
